@@ -1,0 +1,31 @@
+{
+  "staff_role_id": 1381342392161931444,
+  "panel_message_id": 1438646872171483267,
+  "panel_channel_id": 1381637021440938185,
+  "categories": [
+    {
+      "name": "Support",
+      "emoji": "🆘",
+      "color": 3447003,
+      "description": "Richiesta di supporto tecnico"
+    },
+    {
+      "name": "Reported User",
+      "emoji": "⚠️",
+      "color": 16711680,
+      "description": "Segnalazione di un utente"
+    },
+    {
+      "name": "Suggestion",
+      "emoji": "💡",
+      "color": 65280,
+      "description": "Suggerimenti e feedback"
+    },
+    {
+      "name": "Bug Report",
+      "emoji": "🐛",
+      "color": 16711680,
+      "description": "Segnalazione di bug"
+    }
+  ]
+}
