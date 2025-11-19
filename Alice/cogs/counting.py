@@ -1,5 +1,4 @@
-# PART 1/3 — core features (paste first)
-
+## Tutti gli import e la classe Counting rimangono invariati
 import discord
 from discord.ext import commands, tasks
 from discord import app_commands
@@ -226,7 +225,6 @@ class Counting(commands.Cog):
                     await ch.send(embed=embed)
             except Exception:
                 pass
-# PART 2/3 — leaderboard & competitive (paste after Part 1)
 
     # ------------- /counting leaderboard -------------
     @counting_group.command(name="leaderboard", description="Mostra la classifica dei contatori del server")
@@ -304,7 +302,6 @@ class Counting(commands.Cog):
     @weekly_task.before_loop
     async def before_weekly(self):
         await self.bot.wait_until_ready()
-# PART 3/3 — advanced controls, hard mode toggles, log config, recovery toggles, setup (paste last)
 
     # ------------- /counting mode (hard on/off) -------------
     @counting_group.command(name="mode", description="Imposta modalità del canale: hard|normal")

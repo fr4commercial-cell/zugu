@@ -1,45 +1,15 @@
-# cogs/tickets.py
+# tickets_cog.py
 import discord
 from discord.ext import commands
 from discord import app_commands, ui
 import json
 import os
-import html as htmlescape
 from datetime import datetime
 from typing import Optional
 
 BASE_DIR = os.path.dirname(__file__)
 TICKETS_FILE = os.path.join(BASE_DIR, '..', 'tickets.json')
 CONFIG_FILE = os.path.join(BASE_DIR, '..', 'config.json')
-TRANSCRIPTS_DIR = os.path.join(os.path.dirname(BASE_DIR), "transcripts")
-
-# ---------- CONFIG ----------
-STAFF_ROLES = {
-    1381342494729703606,
-    1381342426815402095,
-    1437535379342495804,
-    1207362251846066266,
-    1381342392161931444,
-    1438813413949309039,
-    1381579601200807936
-}
-LOG_CHANNEL_ID = 1440441906978099342
-# Theme: dark (C) chosen by user
-THEME = {
-    "background": "#0f1113",
-    "card": "#1e2226",
-    "muted": "#aaaaaa",
-    "accent": "#7289da",
-    "text": "#e6edf3",
-    "embed_border": "#4f545c"
-}
-# ----------------------------
-
-def ensure_transcripts_dir():
-    try:
-        os.makedirs(TRANSCRIPTS_DIR, exist_ok=True)
-    except Exception:
-        pass
 
 def load_json(path, default):
     try:
@@ -49,19 +19,16 @@ def load_json(path, default):
         return default
 
 def save_json(path, data):
-    try:
-        with open(path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
-    except Exception:
-        pass
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
 
-# ------------------ Modal & Views ------------------
 class TicketFormModal(ui.Modal):
     def __init__(self, panel, cog):
         super().__init__(title=panel.get('name', 'Modulo Ticket'))
         self.panel = panel
         self.cog = cog
+        # Create up to 5 fields from panel config
         for field in panel.get('fields', [])[:5]:
             style = discord.TextStyle.paragraph if len(field.get('name', '')) > 20 else discord.TextStyle.short
             self.add_item(ui.TextInput(
@@ -72,6 +39,7 @@ class TicketFormModal(ui.Modal):
             ))
 
     async def on_submit(self, interaction: discord.Interaction):
+        # Send a summary embed in the ticket channel (the modal is triggered from a channel)
         embed = discord.Embed(
             title=f"📋 Informazioni Ticket - {self.panel.get('name')}",
             color=self.panel.get('color', 0x2ECC71),
@@ -84,17 +52,10 @@ class TicketFormModal(ui.Modal):
         if self.panel.get('image'):
             embed.set_image(url=self.panel['image'])
 
+        await interaction.response.send_message("✅ Informazioni registrate!", ephemeral=True)
+        # If invoked from a channel, also post the embed there
         try:
-            await interaction.response.send_message("✅ Informazioni registrate!", ephemeral=True)
-        except Exception:
-            try:
-                await interaction.followup.send("✅ Informazioni registrate!", ephemeral=True)
-            except Exception:
-                pass
-
-        try:
-            if interaction.channel:
-                await interaction.channel.send(embed=embed)
+            await interaction.channel.send(embed=embed)
         except Exception:
             pass
 
@@ -103,27 +64,12 @@ class TicketFormView(ui.View):
     def __init__(self, modal: TicketFormModal):
         super().__init__(timeout=None)
         self.modal = modal
+        # Button that opens modal (server-side handling uses custom_id; we'll handle via callback)
+        self.add_item(ui.Button(label="Compila Informazioni", style=discord.ButtonStyle.success, custom_id="open_modal_button"))
 
     @ui.button(label="Compila Informazioni", style=discord.ButtonStyle.success, custom_id="open_modal_button")
     async def open_modal(self, interaction: discord.Interaction, button: ui.Button):
         await interaction.response.send_modal(self.modal)
-
-
-class TranscriptButton(ui.View):
-    def __init__(self, cog):
-        super().__init__(timeout=None)
-        self.cog = cog
-
-    @ui.button(label="📄 Transcript", style=discord.ButtonStyle.blurple, custom_id="ticket_transcript_btn")
-    async def transcript(self, interaction: discord.Interaction, button: ui.Button):
-        # Only staff can use this button
-        if not any(r.id in STAFF_ROLES for r in interaction.user.roles):
-            try:
-                await interaction.response.send_message("❌ Solo lo staff può usare questo pulsante.", ephemeral=True)
-            except Exception:
-                pass
-            return
-        await self.cog.generate_transcript(interaction, invoked_by="button")
 
 
 class TicketPanelButton(ui.Button):
@@ -138,6 +84,7 @@ class TicketPanelButton(ui.Button):
         self.cog = cog
 
     async def callback(self, interaction: discord.Interaction):
+        # Create category if not exists and create ticket channel with appropriate overwrites
         await interaction.response.defer(ephemeral=True)
         guild = interaction.guild
         if guild is None:
@@ -194,8 +141,8 @@ class TicketPanelButton(ui.Button):
             embed.set_image(url=self.panel['image'])
 
         try:
-            transcript_view = TranscriptButton(self.cog)
-            await ticket_channel.send(embed=embed, view=transcript_view)
+            await ticket_channel.send(embed=embed)
+            # Send a modal-open button in the channel for the user to fill info (if panel has fields)
             if self.panel.get('fields'):
                 modal = TicketFormModal(self.panel, self.cog)
                 view = TicketFormView(modal)
@@ -213,7 +160,6 @@ class TicketPanelsView(ui.View):
             self.add_item(TicketPanelButton(panel, cog))
 
 
-# ------------------ Cog ------------------
 class Tickets(commands.Cog):
     """Cog che gestisce il sistema tickets (slash + comandi classici)"""
     def __init__(self, bot: commands.Bot):
@@ -221,230 +167,29 @@ class Tickets(commands.Cog):
         self.tickets = load_json(TICKETS_FILE, {})
         self.config = load_json(CONFIG_FILE, {})
 
+        # Create an app_commands.Group and register commands that point to methods below.
         self.ticket_group = app_commands.Group(name="ticket", description="Gestione tickets")
+
+        # Bind group commands to methods
+        # Note: methods are already defined, we decorate them programmatically here.
         self.ticket_group.command(name="panel", description="Mostra il pannello per creare ticket")(self.ticket_panel)
         self.ticket_group.command(name="create", description="Crea un nuovo ticket")(self.create_ticket)
         self.ticket_group.command(name="close", description="Chiude il ticket nel canale attuale")(self.close_ticket)
         self.ticket_group.command(name="reopen", description="Riapri un ticket chiuso (solo staff)")(self.reopen_ticket)
         self.ticket_group.command(name="delete", description="Elimina definitivamente il ticket (solo staff)")(self.delete_ticket)
+        # Register the group to the bot tree
         try:
             self.bot.tree.add_command(self.ticket_group)
         except Exception:
+            # in some contexts the group may already be present; ignore
             pass
 
-        ensure_transcripts_dir()
-
+    # ---------- Helpers ----------
     def save_tickets(self):
         save_json(TICKETS_FILE, self.tickets)
 
     def save_config(self):
         save_json(CONFIG_FILE, self.config)
-
-    async def generate_transcript(self, interaction: discord.Interaction, invoked_by: str = "unknown"):
-        """
-        Genera transcript TXT + HTML (tema scuro, logo testuale),
-        salva in ./transcripts/ e invia file HTML+TXT al channel log e in DM al creatore.
-        """
-        try:
-            await interaction.response.defer(ephemeral=True)
-        except Exception:
-            pass
-
-        channel = interaction.channel
-        if channel is None:
-            try:
-                await interaction.followup.send("❌ Impossibile leggere il canale.", ephemeral=True)
-            except Exception:
-                pass
-            return
-
-        channel_id = str(channel.id)
-        if channel_id not in self.tickets:
-            try:
-                await interaction.followup.send("❌ Questo non è un canale ticket!", ephemeral=True)
-            except Exception:
-                pass
-            return
-
-        ticket = self.tickets[channel_id]
-        author_id = ticket.get('author')
-
-        # Prepare text and HTML
-        txt_lines = []
-        txt_lines.append(f"===== TRANSCRIPT TICKET {channel.name} =====")
-        txt_lines.append(f"Server: {channel.guild.name} ({channel.guild.id})")
-        creator = channel.guild.get_member(author_id)
-        txt_lines.append(f"Creato da: {creator} ({author_id})")
-        txt_lines.append(f"Aperto il: {ticket.get('created_at')}")
-        txt_lines.append(f"Generato da: {interaction.user} (modo: {invoked_by})")
-        txt_lines.append("")
-        txt_lines.append("----- MESSAGGI -----")
-
-        # HTML header / style (dark theme)
-        html_parts = []
-        html_parts.append("<!doctype html><html lang='it'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>")
-        html_parts.append(f"<title>Transcript {htmlescape.escape(channel.name)}</title>")
-        html_parts.append("<style>")
-        html_parts.append(f"body{{background:{THEME['background']};color:{THEME['text']};font-family:Segoe UI,Arial,Helvetica,sans-serif;padding:18px}}")
-        html_parts.append(".wrap{max-width:980px;margin:0 auto}")
-        html_parts.append(f".header{{background:{THEME['card']};padding:16px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.5);margin-bottom:14px}}")
-        html_parts.append(f".server{{color:{THEME['muted']};font-size:13px}}")
-        html_parts.append(f".title{{font-size:18px;color:{THEME['text']};margin-bottom:6px}}")
-        html_parts.append(".msg{background:#111214;border-radius:8px;padding:10px;margin:10px 0;border:1px solid rgba(255,255,255,0.02)}")
-        html_parts.append(".meta{font-size:12px;color:#9aa3b2;margin-bottom:6px}")
-        html_parts.append(".content{white-space:pre-wrap;color:#d5dbe5}")
-        html_parts.append(f".embed{{border-left:4px solid {THEME['embed_border']};background:#101214;padding:8px;margin-top:6px;border-radius:6px}}")
-        html_parts.append(".attach{font-size:13px;margin-top:6px;color:#9aa3b2}")
-        html_parts.append("</style></head><body><div class='wrap'>")
-        # logo textual (server name)
-        html_parts.append("<div class='header'>")
-        html_parts.append(f"<div class='title'>📄 Transcript — {htmlescape.escape(channel.guild.name)}</div>")
-        html_parts.append(f"<div class='server'>Canale: {htmlescape.escape(channel.name)} • Server ID: {channel.guild.id}</div>")
-        html_parts.append(f"<div class='server'>Creato da: {htmlescape.escape(str(creator))} ({author_id})</div>")
-        html_parts.append(f"<div class='server'>Aperto il: {htmlescape.escape(str(ticket.get('created_at')))}</div>")
-        html_parts.append(f"<div class='server'>Generato da: {htmlescape.escape(str(interaction.user))} (modo: {htmlescape.escape(invoked_by)})</div>")
-        html_parts.append("</div>")
-
-        # iterate history
-        try:
-            async for msg in channel.history(limit=None, oldest_first=True):
-                ts = msg.created_at.strftime("%d %b %Y • %H:%M:%S")
-                author_display = f"{htmlescape.escape(str(msg.author))} ({msg.author.id})"
-                content_text = msg.content or ""
-                if content_text.strip():
-                    txt_lines.append(f"[{ts}] {msg.author} ({msg.author.id}): {content_text}")
-                else:
-                    txt_lines.append(f"[{ts}] {msg.author} ({msg.author.id}): <Nessun testo>")
-
-                # HTML message
-                html_parts.append("<div class='msg'>")
-                html_parts.append(f"<div class='meta'><strong>{author_display}</strong> • <span>{ts}</span></div>")
-                if content_text.strip():
-                    html_parts.append(f"<div class='content'>{htmlescape.escape(content_text)}</div>")
-                else:
-                    html_parts.append("<div class='content'><i>&lt;Nessun testo&gt;</i></div>")
-
-                # embeds (summarize)
-                if msg.embeds:
-                    for emb in msg.embeds:
-                        try:
-                            html_parts.append("<div class='embed'>")
-                            if getattr(emb, "title", None):
-                                html_parts.append(f"<div><strong>{htmlescape.escape(emb.title)}</strong></div>")
-                            if getattr(emb, "description", None) and emb.description:
-                                html_parts.append(f"<div>{htmlescape.escape((emb.description or '')[:3000])}</div>")
-                            if getattr(emb, "fields", None):
-                                for field in emb.fields:
-                                    html_parts.append(f"<div><em>{htmlescape.escape(field.name)}</em>: {htmlescape.escape(field.value)}</div>")
-                            if getattr(emb, "footer", None) and emb.footer.text:
-                                html_parts.append(f"<div class='meta'>Footer: {htmlescape.escape(emb.footer.text)}</div>")
-                            html_parts.append("</div>")
-                        except Exception:
-                            html_parts.append("<div class='embed'><em>Embed: errore nel parsing</em></div>")
-
-                # attachments
-                if msg.attachments:
-                    for att in msg.attachments:
-                        try:
-                            txt_lines.append(f"    [ALLEGATO] {att.filename} -> {att.url}")
-                            html_parts.append(f"<div class='attach'>📎 <a href='{htmlescape.escape(att.url)}' target='_blank'>{htmlescape.escape(att.filename)}</a></div>")
-                        except Exception:
-                            html_parts.append("<div class='attach'>📎 <em>Allegato (errore)</em></div>")
-
-                html_parts.append("</div>")  # end msg
-        except Exception as e:
-            txt_lines.append(f"[ERRORE LETTURA MESSAGGI: {e}]")
-            html_parts.append(f"<div class='msg'><em>Errore lettura messaggi: {htmlescape.escape(str(e))}</em></div>")
-
-        html_parts.append("</div></body></html>")
-
-        transcript_text = "\n".join(txt_lines)
-        transcript_html = "\n".join(html_parts)
-
-        # Ensure transcripts dir exists
-        ensure_transcripts_dir()
-
-        safe_name = channel.name.replace(" ", "_")
-        timestamp_str = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-        txt_filename = f"transcript_{safe_name}_{channel.id}_{timestamp_str}.txt"
-        html_filename = f"transcript_{safe_name}_{channel.id}_{timestamp_str}.html"
-        txt_path = os.path.join(TRANSCRIPTS_DIR, txt_filename)
-        html_path = os.path.join(TRANSCRIPTS_DIR, html_filename)
-
-        try:
-            with open(txt_path, 'w', encoding='utf-8') as f:
-                f.write(transcript_text)
-        except Exception:
-            txt_path = None
-
-        try:
-            with open(html_path, 'w', encoding='utf-8') as f:
-                f.write(transcript_html)
-        except Exception:
-            html_path = None
-
-        # Send to log channel
-        log_channel = None
-        try:
-            log_channel = channel.guild.get_channel(LOG_CHANNEL_ID)
-        except Exception:
-            log_channel = None
-
-        if not log_channel:
-            try:
-                log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
-            except Exception:
-                log_channel = None
-
-        log_msg = f"📄 Transcript del ticket `{channel.name}` (invocato da {interaction.user.mention}, modo: {invoked_by})"
-
-        if log_channel:
-            try:
-                files = []
-                if html_path:
-                    files.append(discord.File(html_path, filename=html_filename))
-                if txt_path:
-                    files.append(discord.File(txt_path, filename=txt_filename))
-                if files:
-                    await log_channel.send(content=log_msg, files=files)
-                else:
-                    await log_channel.send(content=log_msg + "\n```" + (transcript_text[:1900] or "Nessun contenuto") + "```")
-            except Exception:
-                try:
-                    await interaction.followup.send("⚠️ Non sono riuscito a inviare il transcript nel canale log (permessi?).", ephemeral=True)
-                except Exception:
-                    pass
-        else:
-            try:
-                await interaction.followup.send("⚠️ Canale di log non trovato; transcript salvato localmente.", ephemeral=True)
-            except Exception:
-                pass
-
-        # DM to ticket author
-        try:
-            author_member = channel.guild.get_member(author_id)
-            if author_member:
-                try:
-                    files = []
-                    if html_path:
-                        files.append(discord.File(html_path, filename=html_filename))
-                    if txt_path:
-                        files.append(discord.File(txt_path, filename=txt_filename))
-                    if files:
-                        await author_member.send(content=f"📄 Transcript del tuo ticket `{channel.name}` (richiesto da {interaction.user}):", files=files)
-                    else:
-                        await author_member.send(content=f"📄 Transcript del tuo ticket `{channel.name}` (richiesto da {interaction.user}):\n```{transcript_text[:1900]}```")
-                except Exception:
-                    pass
-        except Exception:
-            pass
-
-        try:
-            await interaction.followup.send("📄 Transcript generato e salvato in /transcripts/ (inviato a log + DM se possibile).", ephemeral=True)
-        except Exception:
-            pass
-
-        # Do NOT delete the files: keep them for archive as requested
 
     # ---------- Slash commands (app commands) ----------
     async def ticket_panel(self, interaction: discord.Interaction):
@@ -466,6 +211,7 @@ class Tickets(commands.Cog):
 
         view = TicketPanelsView(panels, self)
         try:
+            # send in the current channel
             await interaction.followup.send(embed=embed, view=view)
         except Exception:
             try:
@@ -527,12 +273,8 @@ class Tickets(commands.Cog):
         embed.add_field(name="Data Creazione", value=datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"), inline=False)
         embed.set_footer(text="Usa /ticket close per chiudere il ticket")
 
-        try:
-            transcript_view = TranscriptButton(self)
-            await ticket_channel.send(embed=embed, view=transcript_view)
-            await interaction.followup.send(f"✅ Ticket creato: {ticket_channel.mention}", ephemeral=True)
-        except Exception:
-            await interaction.followup.send(f"✅ Ticket creato: {ticket_channel.mention}", ephemeral=True)
+        await ticket_channel.send(embed=embed)
+        await interaction.followup.send(f"✅ Ticket creato: {ticket_channel.mention}", ephemeral=True)
 
     async def close_ticket(self, interaction: discord.Interaction):
         """/ticket close"""
@@ -547,6 +289,7 @@ class Tickets(commands.Cog):
             return
 
         ticket = self.tickets[channel_id]
+        # permission checks
         staff_role_id = self.config.get("staff_role_id")
         is_staff = False
         if staff_role_id:
@@ -644,9 +387,7 @@ class Tickets(commands.Cog):
         except Exception:
             pass
 
-        channel = interaction.channel
-        channel_id = str(channel.id)
-
+        channel_id = str(interaction.channel.id)
         if channel_id not in self.tickets:
             await interaction.followup.send("❌ Questo non è un canale ticket!", ephemeral=True)
             return
@@ -662,41 +403,21 @@ class Tickets(commands.Cog):
             await interaction.followup.send("❌ Solo lo staff o un admin può eliminare i ticket!", ephemeral=True)
             return
 
-        # Generate transcript BEFORE deleting (invoked_by="delete")
-        try:
-            await self.generate_transcript(interaction, invoked_by="delete")
-        except Exception:
-            try:
-                await interaction.followup.send("⚠️ Errore durante la generazione del transcript; procedo comunque con l'eliminazione.", ephemeral=True)
-            except Exception:
-                pass
-
-        # remove stored ticket
         try:
             del self.tickets[channel_id]
             self.save_tickets()
-        except Exception:
-            pass
-
-        # delete the channel
-        try:
-            await channel.delete(reason=f"Ticket eliminato da {interaction.user}")
+            await interaction.channel.delete(reason=f"Ticket eliminato da {interaction.user}")
         except Exception as e:
             try:
-                await interaction.followup.send(f"❌ Errore eliminazione canale: {e}", ephemeral=True)
+                await interaction.followup.send(f"❌ Errore nell'eliminazione del canale: {e}", ephemeral=True)
             except Exception:
                 pass
-            return
-
-        try:
-            await interaction.followup.send("🗑️ Ticket eliminato.", ephemeral=True)
-        except Exception:
-            pass
 
     # ---------- Classic (text) commands for ticket management ----------
     @commands.command(name="add_member")
     @commands.has_permissions(manage_channels=True)
     async def add_member(self, ctx: commands.Context, member: discord.Member):
+        """Aggiunge un utente al ticket (comando testuale)"""
         channel_id = str(ctx.channel.id)
         if channel_id not in self.tickets:
             await ctx.send("❌ Questo non è un canale ticket!")
@@ -719,6 +440,7 @@ class Tickets(commands.Cog):
     @commands.command(name="remove_member")
     @commands.has_permissions(manage_channels=True)
     async def remove_member(self, ctx: commands.Context, member: discord.Member):
+        """Rimuove un utente dal ticket (comando testuale)"""
         channel_id = str(ctx.channel.id)
         if channel_id not in self.tickets:
             await ctx.send("❌ Questo non è un canale ticket!")
@@ -740,6 +462,7 @@ class Tickets(commands.Cog):
 
     @commands.command(name="list_tickets")
     async def list_tickets(self, ctx: commands.Context):
+        """Mostra tutti i tuoi ticket aperti (comando testuale)"""
         user_tickets = [(tid, t) for tid, t in self.tickets.items() if t.get('author') == ctx.author.id and t.get('status') == 'open']
         if not user_tickets:
             await ctx.send("❌ Non hai ticket aperti!")
@@ -754,6 +477,7 @@ class Tickets(commands.Cog):
 
     @commands.command(name="ticket_help")
     async def ticket_help(self, ctx: commands.Context):
+        """Mostra la guida ai comandi (testuale)"""
         embed = discord.Embed(title="Sistema Tickets", description="Usa i comandi seguenti:", color=0x3498DB)
         embed.add_field(name="/ticket create <argomento>", value="Crea un nuovo ticket", inline=False)
         embed.add_field(name="/ticket close", value="Chiude il ticket nel canale attuale", inline=False)
@@ -764,9 +488,11 @@ class Tickets(commands.Cog):
         embed.add_field(name="/ticket reopen", value="Riapri un ticket chiuso (solo staff)", inline=False)
         await ctx.send(embed=embed)
 
+    # Optional helper to add staff role to the channel (text command)
     @commands.command(name="add_staff_role")
     @commands.has_permissions(administrator=True)
     async def add_staff_role(self, ctx: commands.Context):
+        """Aggiunge il ruolo staff al ticket attuale (testuale)"""
         channel_id = str(ctx.channel.id)
         if channel_id not in self.tickets:
             await ctx.send("❌ Questo non è un canale ticket!")
@@ -785,8 +511,6 @@ class Tickets(commands.Cog):
         await ctx.channel.set_permissions(staff_role, read_messages=True, send_messages=True)
         await ctx.send(f"✅ {staff_role.mention} può ora visualizzare e scrivere in questo ticket")
 
-
 # Setup function for extension
 async def setup(bot: commands.Bot):
     await bot.add_cog(Tickets(bot))
-    

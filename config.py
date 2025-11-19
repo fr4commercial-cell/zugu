@@ -1,11 +1,1 @@
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# Bot Configuration
-
-# Tickets Configuration
-
-# Embed Colors
-
+# (File deleted: config.py was redundant and unused)

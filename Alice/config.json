@@ -1,15 +1,6 @@
 {
   "staff_role_id": 123456789012345678,
-  "category_name": "Tickets",
   "panels": [
-    {
-      "name": "Supporto",
-      "description": "Supporto tecnico",
-      "emoji": "🛠️",
-      "fields": [
-        {"name": "Descrivi il problema", "placeholder": "Cosa non funziona?", "required": true}
-      ]
-    },
     {
       "name": "Supporto Discord",
       "emoji": "💬",
