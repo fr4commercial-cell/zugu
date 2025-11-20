@@ -183,6 +183,31 @@ class Counting(commands.Cog):
         e.add_field(name="Chat", value=conf.get("allow_chat", True))
         await interaction.response.send_message(embed=e)
 
+    # --- TIMEOUT CONFIG COMMAND ---
+    @counting_group.command(name="timeout", description="Imposta i minuti di timeout per errori nel counting (0 = disabilitato)")
+    @app_commands.describe(minutes="Minuti di timeout (0 per disabilitare, max 10080)")
+    async def counting_timeout(self, interaction: discord.Interaction, minutes: int):
+        if not (interaction.user.guild_permissions.administrator or interaction.user.guild_permissions.manage_guild):
+            return await interaction.response.send_message("❌ Permessi insufficienti.", ephemeral=True)
+
+        # Clamp range
+        if minutes < 0:
+            minutes = 0
+        if minutes > 10080:
+            minutes = 10080
+
+        self.config["timeout_minutes"] = int(minutes)
+        save_json(CONFIG_FILE, self.config)
+
+        text = "disabilitato" if minutes == 0 else f"{minutes} minuti"
+        try:
+            await interaction.response.send_message(f"✅ Timeout per errori impostato a: {text}.", ephemeral=True)
+        except discord.HTTPException:
+            try:
+                await interaction.followup.send(f"✅ Timeout per errori impostato a: {text}.", ephemeral=True)
+            except Exception:
+                pass
+
     # MAIN COUNTING HANDLER
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -280,13 +305,14 @@ class Counting(commands.Cog):
             minutes = int(self.config.get("timeout_minutes", 1))
         except Exception:
             minutes = 1
-        try:
-            member: discord.Member = message.author  # in guild context, author is a Member
-            until = discord.utils.utcnow() + timedelta(minutes=minutes)
-            await member.timeout(until=until, reason=f"Counting violation: {reason}")
-        except Exception:
-            # Ignore if lacking permissions or API failure
-            pass
+        if minutes > 0:
+            try:
+                member: discord.Member = message.author  # in guild context, author is a Member
+                until = discord.utils.utcnow() + timedelta(minutes=minutes)
+                await member.timeout(until=until, reason=f"Counting violation: {reason}")
+            except Exception:
+                # Ignore if lacking permissions or API failure
+                pass
 
 
 # --- EXTENSION SETUP ---
