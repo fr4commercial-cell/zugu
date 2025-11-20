@@ -83,7 +83,9 @@ class PagedBanListView(discord.ui.View):
         await self._edit(interaction)
 
 BASE_DIR = os.path.dirname(__file__)
-CONFIG_PATH = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'config.json')
+# Use project root (one level up from cogs) instead of two levels which caused '/home/config.json'
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..'))
+CONFIG_PATH = os.path.join(PROJECT_ROOT, 'config.json')
 MOD_JSON = os.path.join(BASE_DIR, 'moderation.json')
 WARNS_JSON = os.path.join(BASE_DIR, 'warns.json')
 USER_WORDS_JSON = os.path.join(BASE_DIR, 'user_words.json')
