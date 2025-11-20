@@ -16,22 +16,29 @@ intents.presences = True
 
 class MyBot(commands.Bot):
     async def setup_hook(self):
-        # Carica tutte le estensioni (COGS)
-        initial_extensions = [
-            'cogs.verify',
-            'cogs.welcome',
-            'cogs.boost',
-            'cogs.tickets',
-            'cogs.counting',
-            'cogs.autorole',
-            'cogs.levels',
-            'cogs.moderation',
-            'cogs.giveaways',
-            'cogs.logs',
-            'cogs.helps',
-            'cogs.console_logger',
-            'cogs.embed_creator',
-        ]
+        # Carica dinamicamente solo i cogs che hanno una funzione setup
+        initial_extensions = []
+        try:
+            cogs_dir = os.path.join(os.path.dirname(__file__), 'cogs')
+            for fname in os.listdir(cogs_dir):
+                if not fname.endswith('.py'):
+                    continue
+                if fname.startswith('_'):
+                    continue
+                name = fname[:-3]
+                # escludi moduli helper non-cog
+                if name in { 'console_logger', '__init__' }:
+                    continue
+                fpath = os.path.join(cogs_dir, fname)
+                try:
+                    with open(fpath, 'r', encoding='utf-8', errors='ignore') as f:
+                        src = f.read()
+                    if 'async def setup' in src or 'def setup(' in src:
+                        initial_extensions.append(f'cogs.{name}')
+                except Exception:
+                    continue
+        except Exception as e:
+            print(f"⚠️ Scansione cogs fallita: {e}")
 
         for ext in initial_extensions:
             try:
