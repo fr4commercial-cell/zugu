@@ -4,7 +4,7 @@ import json
 import os
 import asyncio
 from datetime import datetime, timezone, timedelta
-from console_logger import logger
+from .console_logger import logger
 
 
 BASE_DIR = os.path.dirname(__file__)
