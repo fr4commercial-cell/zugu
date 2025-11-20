@@ -53,7 +53,7 @@ def load_config():
             "enabled": True,
             "text_xp": {"min": 5, "max": 15, "cooldown_seconds": 60, "excluded_channel_ids": [], "excluded_role_ids": [], "multiplier_roles": {}},
             "voice_xp": {"enabled": True, "per_min_min": 2, "per_min_max": 5, "exclude_muted": True, "exclude_deaf": True, "exclude_afk_channel_ids": [], "excluded_role_ids": [], "multiplier_roles": {}},
-            "announce_channel_id": None,
+            "announce_channel_id": "1381590680518000670",
             "leaderboard": {"page_size": 10},
             "rank_card": {"width": 934, "height": 282, "background": "assets/rankcard/rank_black.png", "bar_color": "#14ff72", "bar_bg": "#1f1f1f", "text_color": "#ffffff", "font_path": "assets/rankcard/Roboto-Bold.ttf"}
         }
