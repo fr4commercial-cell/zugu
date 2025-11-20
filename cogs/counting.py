@@ -222,7 +222,11 @@ class Counting(commands.Cog):
         chan_conf["last_user"] = None
         self.set
 
+
 # --- REQUIRED SETUP FUNCTION ---
 def setup(bot: commands.Bot):
     bot.add_cog(Counting(bot))
 
+# Added async setup function
+async def setup(bot):
+    await bot.add_cog(Counting(bot))
