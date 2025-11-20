@@ -1,57 +1,85 @@
 {
-  "staff_role_id": 123456789012345678,
-  "category_name": "Tickets",
-  "panels": [
-    {
-      "name": "Supporto",
-      "description": "Supporto tecnico",
-      "emoji": "🛠️",
-      "fields": [
-        {"name": "Descrivi il problema", "placeholder": "Cosa non funziona?", "required": true}
-      ]
-    },
-    {
-      "name": "Supporto Discord",
-      "emoji": "💬",
-      "description": "Apri un ticket per supporto Discord.",
-      "color": 3447003,
-      "image": "",
-      "fields": [
-        {"name": "Descrivi il problema", "placeholder": "Spiega il tuo problema..."}
-      ]
-    },
-    {
-      "name": "Supporto Twitch",
-      "emoji": "📺",
-      "description": "Apri un ticket per supporto Twitch.",
-      "color": 10181046,
-      "image": "",
-      "fields": [
-        {"name": "Link canale Twitch", "placeholder": "https://twitch.tv/..."},
-        {"name": "Descrivi la richiesta", "placeholder": "Dettagli..."}
-      ]
-    },
-    {
-      "name": "Clan",
-      "emoji": "⚔️",
-      "description": "Ticket per entrare nel clan.",
-      "color": 15105570,
-      "image": "",
-      "fields": [
-        {"name": "Nick in game", "placeholder": "Il tuo nickname..."},
-        {"name": "Motivazione", "placeholder": "Perché vuoi entrare nel clan?"}
-      ]
-    },
-    {
-      "name": "Richiesta ClanWar",
-      "emoji": "⚔️",
-      "description": "Ticket per richiedere una ClanWar.",
-      "color": 15105570,
-      "image": "",
-      "fields": [
-        {"name": "Nick in game", "placeholder": "Il tuo nickname..."},
-        {"name": "Dettagli ClanWar", "placeholder": "Dettagli sulla ClanWar richiesta..."}
-      ]
+    "staff_role_id": 123456789012345678,
+    "category_name": "Tickets",
+    "panels": [
+        {
+            "name": "Supporto",
+            "description": "Supporto tecnico",
+            "emoji": "🛠️",
+            "fields": [
+                {
+                    "name": "Descrivi il problema",
+                    "placeholder": "Cosa non funziona?",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "name": "Supporto Discord",
+            "emoji": "💬",
+            "description": "Apri un ticket per supporto Discord.",
+            "color": 3447003,
+            "image": "",
+            "fields": [
+                {
+                    "name": "Descrivi il problema",
+                    "placeholder": "Spiega il tuo problema..."
+                }
+            ]
+        },
+        {
+            "name": "Supporto Twitch",
+            "emoji": "📺",
+            "description": "Apri un ticket per supporto Twitch.",
+            "color": 10181046,
+            "image": "",
+            "fields": [
+                {
+                    "name": "Link canale Twitch",
+                    "placeholder": "https://twitch.tv/..."
+                },
+                {
+                    "name": "Descrivi la richiesta",
+                    "placeholder": "Dettagli..."
+                }
+            ]
+        },
+        {
+            "name": "Clan",
+            "emoji": "⚔️",
+            "description": "Ticket per entrare nel clan.",
+            "color": 15105570,
+            "image": "",
+            "fields": [
+                {
+                    "name": "Nick in game",
+                    "placeholder": "Il tuo nickname..."
+                },
+                {
+                    "name": "Motivazione",
+                    "placeholder": "Perché vuoi entrare nel clan?"
+                }
+            ]
+        },
+        {
+            "name": "Richiesta ClanWar",
+            "emoji": "⚔️",
+            "description": "Ticket per richiedere una ClanWar.",
+            "color": 15105570,
+            "image": "",
+            "fields": [
+                {
+                    "name": "Nick in game",
+                    "placeholder": "Il tuo nickname..."
+                },
+                {
+                    "name": "Dettagli ClanWar",
+                    "placeholder": "Dettagli sulla ClanWar richiesta..."
+                }
+            ]
+        }
+    ],
+    "1207358785111330836": {
+        "boost_channel": 1381614470043795606
     }
-  ]
 }
