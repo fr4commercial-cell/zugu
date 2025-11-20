@@ -7,7 +7,14 @@ import re
 from math import ceil
 from discord import app_commands
 from bot_utils import OWNER_ID, owner_or_has_permissions, is_owner
-from console_logger import logger
+try:
+    from console_logger import logger
+except ImportError:
+    try:
+        from cogs.console_logger import logger
+    except ImportError:
+        import logging
+        logger = logging.getLogger("moderation_fallback")
 
 class PagedBanListView(discord.ui.View):
     def __init__(self, author_id: int, embeds: list, *, timeout: float = 120):
