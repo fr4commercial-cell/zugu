@@ -5,14 +5,21 @@ from discord import app_commands
 
 def load_config():
     try:
-        with open("config.json", "r") as f:
+        with open("config.json", "r", encoding="utf-8") as f:
             return json.load(f)
     except FileNotFoundError:
         return {}
+    except UnicodeDecodeError:
+        # Fallback: try reading as UTF-8 with errors replaced to avoid import crash
+        try:
+            with open("config.json", "r", encoding="utf-8", errors="replace") as f:
+                return json.load(f)
+        except Exception:
+            return {}
 
 def save_config(data):
-    with open("config.json", "w") as f:
-        json.dump(data, f, indent=4)
+    with open("config.json", "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
 
 class Boost(commands.Cog):
     def __init__(self, bot):
