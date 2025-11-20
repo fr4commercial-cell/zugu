@@ -1,19 +1,14 @@
-# FULL INTEGRATED COUNTING SCRIPT WITH CUSTOM EMOJI SUPPORT
+# FULL INTEGRATED COUNTING SCRIPT WITH CUSTOM EMOJI SUPPORT (CLEANED)
 # ==============================================================
-# Features:
-# - Reset on error
-# - Configurable timeout
-# - Math expressions
-# - Custom emoji for: success, error, milestone
-# - Emoji configurable via /counting emoji
+# Removed all hardmode references and mode= parameters.
 
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands
 from discord import app_commands
 import json
 import os
 import asyncio
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Optional, Dict, Any
 
 BASE_DIR = os.path.dirname(__file__)
@@ -21,7 +16,7 @@ COUNTING_FILE = os.path.join(BASE_DIR, "..", "counting.json")
 LEADERBOARD_FILE = os.path.join(BASE_DIR, "..", "counting_leaderboard.json")
 CONFIG_FILE = os.path.join(BASE_DIR, "..", "counting_config.json")
 
-# Load/save
+# Load/save helpers
 
 def load_json(path, default):
     try:
@@ -63,7 +58,6 @@ class Counting(commands.Cog):
         self.data: Dict[str, Any] = load_json(COUNTING_FILE, {})
         self.leaderboard = load_json(LEADERBOARD_FILE, {})
         self.config = load_json(CONFIG_FILE, DEFAULT_CONFIG.copy())
-        
 
     def _ensure_guild(self, guild_id: str):
         if guild_id not in self.data:
@@ -81,11 +75,6 @@ class Counting(commands.Cog):
         self.data[guild_id]["channels"][channel_id] = conf
         save_json(COUNTING_FILE, self.data)
 
-    def remove_channel_conf(self, guild_id: str, channel_id: str):
-        if guild_id in self.data and channel_id in self.data[guild_id]["channels"]:
-            del self.data[guild_id]["channels"][channel_id]
-            save_json(COUNTING_FILE, self.data)
-
     def inc_leaderboard(self, guild_id: str, user_id: str, amount: int = 1):
         self._ensure_guild(guild_id)
         self.leaderboard[guild_id][user_id] = self.leaderboard[guild_id].get(user_id, 0) + amount
@@ -93,24 +82,23 @@ class Counting(commands.Cog):
 
     # --- CONFIG EMOJI COMMAND ---
     @counting_group.command(name="emoji")
-    @app_commands.describe(type="success/error/milestone", emoji="Emoji personalizzata del server")
+    @app_commands.describe(type="success/error/milestone o numero", emoji="Emoji personalizzata del server")
     async def counting_emoji(self, interaction, type: str, emoji: str):
         if not interaction.user.guild_permissions.manage_guild:
             return await interaction.response.send_message("❌ Permessi insufficienti.", ephemeral=True)
 
         type = type.lower()
         if (type not in ["success", "error", "milestone"] and not type.isdigit()):
-            return await interaction.response.send_message("Usa: success, error, milestone", ephemeral=True)
+            return await interaction.response.send_message("Usa: success, error, milestone, oppure un numero.", ephemeral=True)
 
-        if emoji.startswith("<:"):
-            try:
-                emoji_id = int(emoji.split(":")[2].replace('>',''))
-            except:
-                return await interaction.response.send_message("Emoji non valida.", ephemeral=True)
-        else:
-            return await interaction.response.send_message("Devi usare un'emoji personalizzata del server.", ephemeral=True)
+        if not emoji.startswith("<"):
+            return await interaction.response.send_message("Devi usare un'emoji personalizzata.", ephemeral=True)
 
-        # Numeric special emoji
+        try:
+            emoji_id = int(emoji.split(":")[2].replace('>', ''))
+        except:
+            return await interaction.response.send_message("Emoji non valida.", ephemeral=True)
+
         if type.isdigit():
             self.config["special_numbers"][type] = emoji_id
             save_json(CONFIG_FILE, self.config)
@@ -123,7 +111,7 @@ class Counting(commands.Cog):
 
     # --- MAIN SET COMMAND ---
     @counting_group.command(name="set")
-    @app_commands.describe(channel="Canale", start="Valore iniziale", mode="normal/hard", allow_recovery="Recovery mode")
+    @app_commands.describe(channel="Canale", start="Valore iniziale", allow_recovery="Recovery mode")
     async def counting_set(self, interaction, channel: discord.TextChannel, start: int = 0, allow_recovery: bool = True):
         if not (interaction.user.guild_permissions.administrator or interaction.user.guild_permissions.manage_guild):
             return await interaction.response.send_message("❌ Permessi insufficienti.", ephemeral=True)
@@ -140,8 +128,10 @@ class Counting(commands.Cog):
 
         self.set_channel_conf(guild_id, chan_id, conf)
         await interaction.response.send_message(f"Counting attivato in {channel.mention}", ephemeral=True)
-        try: await channel.send(start + 1)
-        except: pass
+        try:
+            await channel.send(start + 1)
+        except:
+            pass
 
     # INFO COMMAND
     @counting_group.command(name="info")
@@ -176,7 +166,6 @@ class Counting(commands.Cog):
 
         raw = message.content.strip()
 
-        # TRY PARSE INT OR MATH
         try:
             num = int(raw)
         except:
@@ -188,81 +177,48 @@ class Counting(commands.Cog):
 
         expected = chan_conf["last"] + 1
 
-        # SAME USER CHECK
         if message.author.id == chan_conf.get("last_user"):
             await self._delete_and_error(message, chan_conf, guild_id, "same_user")
             return
 
-        # WRONG NUMBER
         if num != expected:
             await self._delete_and_error(message, chan_conf, guild_id, "wrong_number")
             return
 
-        # CORRECT
         chan_conf["last"] = num
         chan_conf["last_user"] = message.author.id
         self.set_channel_conf(guild_id, str(message.channel.id), chan_conf)
         self.inc_leaderboard(guild_id, str(message.author.id))
 
         emoji = self._get_emoji(message.guild, "success_emoji") or "✅"
-        try: await message.add_reaction(emoji)
-        except: pass
+        try:
+            await message.add_reaction(emoji)
+        except:
+            pass
 
         if num in chan_conf.get("milestones", []):
             m_emoji = self._get_emoji(message.guild, "milestone_emoji") or "🎉"
-            try: await message.channel.send(f"{m_emoji} Milestone **{num}** raggiunta da {message.author.mention}!")
-            except: pass
+            try:
+                await message.channel.send(f"{m_emoji} Milestone **{num}** raggiunta da {message.author.mention}!")
+            except:
+                pass
 
-        # Special number emoji
         special = self.config.get("special_numbers", {})
         if str(num) in special and special[str(num)]:
             sp = message.guild.get_emoji(special[str(num)])
             if sp:
-                try: await message.channel.send(f"{sp} Numero speciale **{num}** raggiunto da {message.author.mention}!")
-                except: pass
+                try:
+                    await message.channel.send(f"{sp} Numero speciale **{num}** raggiunto da {message.author.mention}!")
+                except:
+                    pass
 
-    # HELPERS
     async def _delete_and_error(self, message, chan_conf, guild_id, reason):
-        try: await message.delete()
-        except: pass
+        try:
+            await message.delete()
+        except:
+            pass
 
         chan_conf["last"] = 0
         chan_conf["last_user"] = None
-        self.set_channel_conf(guild_id, str(message.channel.id), chan_conf)
-
-        minutes = self.config.get("timeout_minutes", 1)
-        try:
-            await message.author.timeout(discord.utils.utcnow() + timedelta(minutes=minutes), reason=f"Counting error: {reason}")
-        except:
-            pass
-
-        emoji = self._get_emoji(message.guild, "error_emoji") or "❌"
-        try:
-            await message.channel.send(f"{emoji} Numero errato! Si riparte da **0**.")
-        except:
-            pass
-
-        await self._log_error(message, reason)
-
-    def _get_emoji(self, guild, key):
-        eid = self.config.get(key)
-        if not eid:
-            return None
-        return guild.get_emoji(eid)
-
-    async def _log_error(self, message, reason):
-        log_id = self.config.get("log_channel_id")
-        if not log_id:
-            return
-        ch = message.guild.get_channel(int(log_id))
-        if not ch:
-            return
-        e = discord.Embed(title="Errore Counting", color=discord.Color.red())
-        e.add_field(name="Utente", value=message.author.mention)
-        e.add_field(name="Errore", value=reason)
-        e.add_field(name="Canale", value=message.channel.mention)
-        await ch.send(embed=e)
-
-async def setup(bot):
-    await bot.add_cog(Counting(bot))
-    print("✅ Counting Cog caricata")
+        self.set
+        
