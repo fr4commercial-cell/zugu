@@ -84,9 +84,15 @@ class Boost(commands.Cog):
         self.config[guild_id]["boost_channel"] = channel.id
         save_config(self.config)
 
-        await interaction.response.send_message(
-            f"📌 Canale dei boost impostato su {channel.mention}!"
-        )
+        msg = f"📌 Canale dei boost impostato su {channel.mention}!"
+        try:
+            await interaction.response.defer(ephemeral=True)
+        except Exception:
+            pass
+        try:
+            await interaction.followup.send(msg, ephemeral=True)
+        except Exception:
+            pass
 
     # ---------- SLASH COMMAND: SET BOOST EMBED ----------
     @app_commands.command(
@@ -139,7 +145,15 @@ class Boost(commands.Cog):
 
         save_config(self.config)
 
-        await interaction.response.send_message("✨ Embed aggiornato correttamente!")
+        msg = "✨ Embed aggiornato correttamente!"
+        try:
+            await interaction.response.defer(ephemeral=True)
+        except Exception:
+            pass
+        try:
+            await interaction.followup.send(msg, ephemeral=True)
+        except Exception:
+            pass
 
     # ---------- SLASH COMMAND: BOOST COUNT ----------
     @app_commands.command(
@@ -150,9 +164,15 @@ class Boost(commands.Cog):
         boosts = interaction.guild.premium_subscription_count
         level = interaction.guild.premium_tier
 
-        await interaction.response.send_message(
-            f"⚡ Il server ha attualmente **{boosts} boost** (Livello **{level}**)."
-        )
+        msg = f"⚡ Il server ha attualmente **{boosts} boost** (Livello **{level}**)."
+        try:
+            await interaction.response.defer(ephemeral=True)
+        except Exception:
+            pass
+        try:
+            await interaction.followup.send(msg, ephemeral=True)
+        except Exception:
+            pass
 
 async def setup(bot):
     await bot.add_cog(Boost(bot))
