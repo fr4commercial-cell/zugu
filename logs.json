@@ -1,0 +1,387 @@
+{
+    "join_log_channel_id": "1363431774763483216",
+    "leave_log_channel_id": "1363431774763483216",
+    "join_message": {
+        "title": "Join",
+        "description": "{mention} è entrato nel server il {joined_at}.\nAccount creato il {created_at}.\nMembri totali: {total_members}",
+        "color": 3066993,
+        "footer": "ID: {id} | {total_members} membri",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "leave_message": {
+        "title": "Left",
+        "description": "{mention} ha lasciato il server.\nAccount creato: {created_at}",
+        "color": 15158332,
+        "footer": "ID: {id} | {total_members} membri",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "role_change_message": {
+        "title": "Ruoli Modificati",
+        "description": "Ruoli modificati per {mention} da {staffer}.\n**Ruoli aggiunti:** {added_roles}\n**Ruoli rimossi:** {removed_roles}",
+        "color": 16776960,
+        "footer": "ID: {id} | {total_members} membri",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "moderation_log_channel_id": "1428464022835036210",
+    "ban_message": {
+        "title": "Ban",
+        "description": "{mention} è stato bannato.\n**Motivo:** {reason}\n**Staffer:** {staffer}",
+        "color": 16711680,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "unban_message": {
+        "title": "Unban",
+        "description": "{mention} è stato unbannato.\n**Staffer:** {staffer}",
+        "color": 65280,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "kick_message": {
+        "title": "Kick",
+        "description": "{mention} è stato kickato.\n**Motivo:** {reason}\n**Staffer:** {staffer}",
+        "color": 16225061,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "mute_message": {
+        "title": "Mute",
+        "description": "{mention} è stato mutato per {duration}.\n**Motivo:** {reason}\n**Staffer:** {staffer}",
+        "color": 16225061,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "unmute_message": {
+        "title": "Unmute",
+        "description": "{mention} è stato smutato.\n**Staffer:** {staffer}",
+        "color": 65280,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "warn_message": {
+        "title": "Warn",
+        "description": "{mention} ha ricevuto un warn.\n**Motivo:** {reason}\n**Staffer:** {staffer}\n**Warn totali:** {total_warns}",
+        "color": 16753920,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "unwarn_message": {
+        "title": "Unwarn",
+        "description": "Warn ID {warn_id} rimosso da {mention}.\n**Staffer:** {staffer}",
+        "color": 65280,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "clearwarns_message": {
+        "title": "Clear Warns",
+        "description": "Tutti i warn di {mention} sono stati rimossi ({count} warn).\n**Staffer:** {staffer}",
+        "color": 65280,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "nick_message": {
+        "title": "Nickname Cambiato",
+        "description": "Nickname di {mention} cambiato in {new_nick}.\n**Staffer:** {staffer}",
+        "color": 16776960,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "ticket_log_channel_id": "1428469262284230688",
+    "ticket_open_message": {
+        "title": "Ticket Aperto",
+        "description": "Ticket {channel} aperto da {mention}.\n**Numero:** {number}\n**Categoria:** {category}",
+        "color": 36665,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "ticket_close_message": {
+        "title": "Ticket Chiuso",
+        "description": "Ticket {channel} chiuso da {staffer}.\n**Numero:** {number}\n**Aperto da:** {opener}",
+        "color": 16711680,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "ticket_rename_message": {
+        "title": "Ticket Rinominato",
+        "description": "{channel} rinominato in {new_name}.\n**Numero:** {number}\n**Staffer:** {staffer}",
+        "color": 16753920,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "ticket_add_message": {
+        "title": "Utente Aggiunto al Ticket",
+        "description": "{member} aggiunto a {channel}.\n**Numero:** {number}\n**Staffer:** {staffer}",
+        "color": 16753920,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "ticket_remove_message": {
+        "title": "Utente Rimosso dal Ticket",
+        "description": "{member} rimosso da {channel}.\n**Numero:** {number}\n**Staffer:** {staffer}",
+        "color": 16753920,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "autorole_log_channel_id": "1428464022835036210",
+    "autorole_add_message": {
+        "title": "Ruolo Assegnato",
+        "description": "Ruolo {role} assegnato a {mention} tramite reazione.",
+        "color": 65280,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "autorole_remove_message": {
+        "title": "Ruolo Rimosso",
+        "description": "Ruolo {role} rimosso da {mention} tramite reazione.",
+        "color": 16711680,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "automod_log_channel_id": "1428464022835036210",
+    "automod_mute_message": {
+        "title": "Auto-Mute",
+        "description": "{mention} mutato automaticamente per {duration}.\n**Motivo:** {reason}",
+        "color": 16225061,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "automod_warn_message": {
+        "title": "Auto-Warn",
+        "description": "{mention} ha ricevuto un avviso per parola vietata: {word}",
+        "color": 16753920,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "message_log_channel_id": "1428464022835036210",
+    "message_delete_message": {
+        "title": "Messaggio Eliminato",
+        "description": "Messaggio eliminato in {channel}.\n**Contenuto:** {content}\n**Autore:** {mention}",
+        "color": 16711680,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "message_edit_message": {
+        "title": "Messaggio Modificato",
+        "description": "Messaggio modificato in {channel}.\n**Prima:** {old_content}\n**Dopo:** {new_content}\n**Autore:** {mention}",
+        "color": 65280,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "boost_log_channel_id": "1428464022835036210",
+    "boost_message": {
+        "title": "Server Boostato",
+        "description": "{mention} ha boostato il server!",
+        "color": 15990945,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "channel_permission_update_message": {
+        "title": "Permessi Canale Aggiornati",
+        "description": "I permessi del canale {channel} sono stati aggiornati da {staffer}.\n{changes}",
+        "color": 16776960,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "role_permission_update_message": {
+        "title": "Permessi Ruolo Aggiornati",
+        "description": "I permessi del ruolo {role} sono stati aggiornati da {staffer}.\n**Permessi aggiunti:** {added_perms}\n**Permessi rimossi:** {removed_perms}",
+        "color": 16776960,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "channel_create_message": {
+        "title": "Canale Creato",
+        "description": "Il canale {channel} è stato creato da {staffer}.\n**Tipo:** {type}\n**ID:** {id}",
+        "color": 65280,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "channel_delete_message": {
+        "title": "Canale Eliminato",
+        "description": "Il canale {name} è stato eliminato da {staffer}.\n**Tipo:** {type}\n**ID:** {id}",
+        "color": 16711680,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "channel_update_message": {
+        "title": "Canale Aggiornato",
+        "description": "Il canale {channel} è stato aggiornato da {staffer}.\n**Modifiche:** {changes}",
+        "color": 3447003,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "thread_create_message": {
+        "title": "Thread Creato",
+        "description": "Il thread {thread} è stato creato da {staffer}.\n**ID:** {id}",
+        "color": 65280,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "thread_delete_message": {
+        "title": "Thread Eliminato",
+        "description": "Il thread {name} è stato eliminato da {staffer}.\n**ID:** {id}",
+        "color": 16711680,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "thread_update_message": {
+        "title": "Thread Aggiornato",
+        "description": "Il thread {thread} è stato aggiornato da {staffer}.\n**Modifiche:** {changes}",
+        "color": 3447003,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "webhook_create_message": {
+        "title": "Webhook Creato",
+        "description": "Il webhook {name} è stato creato da {staffer}.\n**ID:** {id}",
+        "color": 65280,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "webhook_delete_message": {
+        "title": "Webhook Eliminato",
+        "description": "Il webhook {name} è stato eliminato da {staffer}.\n**ID:** {id}",
+        "color": 16711680,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "webhook_update_message": {
+        "title": "Webhook Aggiornato",
+        "description": "Il webhook {name} è stato aggiornato da {staffer}.\n**Modifiche:** {changes}",
+        "color": 3447003,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "emoji_create_message": {
+        "title": "Emoji Aggiunta",
+        "description": "L'emoji {emojis} è stato aggiunto da {staffer}.",
+        "color": 65280,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "emoji_delete_message": {
+        "title": "Emoji Rimossa",
+        "description": "L'emoji {emojis} è stato rimosso da {staffer}.",
+        "color": 16711680,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "emoji_update_message": {
+        "title": "Emoji Aggiornata",
+        "description": "L'emoji {emojis} è stato aggiornato da {staffer}.",
+        "color": 3447003,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "sticker_create_message": {
+        "title": "Sticker Aggiunto",
+        "description": "Lo sticker {stickers} è stato aggiunto da {staffer}.",
+        "color": 65280,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "sticker_delete_message": {
+        "title": "Sticker Rimosso",
+        "description": "Lo sticker {stickers} è stato rimosso da {staffer}.",
+        "color": 16711680,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "sticker_update_message": {
+        "title": "Sticker Aggiornato",
+        "description": "Lo sticker {stickers} è stato aggiornato da {staffer}.",
+        "color": 3447003,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "role_create_message": {
+        "title": "Ruolo Creato",
+        "description": "Il ruolo {role} è stato creato da {staffer}.\n**ID:** {id}",
+        "color": 65280,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "role_delete_message": {
+        "title": "Ruolo Eliminato",
+        "description": "Il ruolo {name} è stato eliminato da {staffer}.\n**ID:** {id}",
+        "color": 16711680,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "guild_update_message": {
+        "title": "Server Aggiornato",
+        "description": "Il server è stato aggiornato da {staffer}.\n**Modifiche:** {changes}",
+        "color": 3447003,
+        "footer": "Valiance | Logging",
+        "thumbnail": "https://i.postimg.cc/0NZGWpJs/Logo-Crown.png",
+        "author_header": true
+    },
+    "voice_log_channel_id": "1428464022835036210",
+    "vc_join_message": {
+        "title": "Entrato in VC",
+        "description": "{mention} è entrato nel canale vocale {channel}.",
+        "color": 65280,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "vc_leave_message": {
+        "title": "Uscito da VC",
+        "description": "{mention} è uscito dal canale vocale {channel}.",
+        "color": 16711680,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    },
+    "vc_move_message": {
+        "title": "Spostato in VC",
+        "description": "{mention} si è spostato da {old_channel} a {new_channel}.",
+        "color": 16776960,
+        "footer": "Valiance | Logging",
+        "thumbnail": "{avatar}",
+        "author_header": true
+    }
+}

@@ -1,0 +1,48 @@
+{
+  "enabled": true,
+  "text_xp": {
+    "min": 5,
+    "max": 15,
+    "cooldown_seconds": 60,
+    "excluded_channel_ids": [],
+    "excluded_role_ids": [],
+    "multiplier_roles": {}
+  },
+  "voice_xp": {
+    "enabled": true,
+    "per_min_min": 2,
+    "per_min_max": 5,
+    "exclude_muted": true,
+    "exclude_deaf": true,
+    "exclude_afk_channel_ids": [],
+    "excluded_role_ids": [],
+    "multiplier_roles": {}
+  },
+  "leaderboard": {
+    "page_size": 10
+  },
+  "rank_embed": {
+    "title": "Rank Card",
+    "description": "`{user}` - Livello `{level}` • **{mode}**",
+    "color": "#14ff72",
+    "thumbnail": "{avatar}",
+    "fields": [
+      {
+        "name": "XP Totale",
+        "value": "{xp}",
+        "inline": true
+      },
+      {
+        "name": "XP Mancanti",
+        "value": "{remaining}",
+        "inline": true
+      },
+      {
+        "name": "Progresso",
+        "value": "{progress}%",
+        "inline": true
+      }
+    ],
+    "footer": "Valiance - Level System"
+  }
+}
