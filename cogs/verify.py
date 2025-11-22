@@ -404,4 +404,13 @@ class Verify(commands.Cog):
         logger.info(f"Embed verifica configurato: {', '.join(changed) if changed else 'no changes'}")
 
 async def setup(bot):
-    await bot.add_cog(Verify(bot))
+    cog = Verify(bot)
+    await bot.add_cog(cog)
+    # Registra gruppi slash se non già presenti
+    try:
+        if bot.tree.get_command('verify') is None:
+            bot.tree.add_command(cog.verify_group)
+        if bot.tree.get_command('verifyembed') is None:
+            bot.tree.add_command(cog.embed_group)
+    except Exception as e:
+        logger.error(f'Errore registrando gruppi verify: {e}')
