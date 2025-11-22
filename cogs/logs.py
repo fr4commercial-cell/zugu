@@ -59,23 +59,6 @@ class LogCog(commands.Cog):
     # Gruppo comandi slash per configurare i canali di log
     logs_group = app_commands.Group(name='logs', description='Gestione canali di log')
 
-    async def cog_load(self):
-        # Registra il gruppo quando il cog viene caricato
-        try:
-            existing = self.bot.tree.get_command('logs')
-            if existing is None:
-                self.bot.tree.add_command(self.logs_group)
-        except Exception as e:
-            logger.error(f'Errore aggiungendo logs_group: {e}')
-
-    async def cog_unload(self):
-        # Rimuove il gruppo se questo cog viene scaricato
-        try:
-            existing = self.bot.tree.get_command('logs')
-            if existing is not None:
-                self.bot.tree.remove_command('logs')
-        except Exception:
-            pass
 
     @logs_group.command(name='set', description='Imposta il canale per un tipo di log')
     @app_commands.describe(tipo='Tipo log (server/join/leave/message/warns/kicks/bans)', channel='Canale da associare')
@@ -1192,4 +1175,10 @@ class LogCog(commands.Cog):
             logger.error(f'Errore in on_voice_state_update: {e}')
 
 async def setup(bot):
-    await bot.add_cog(LogCog(bot))
+    cog = LogCog(bot)
+    await bot.add_cog(cog)
+    try:
+        if bot.tree.get_command('logs') is None:
+            bot.tree.add_command(cog.logs_group)
+    except Exception as e:
+        logger.error(f'Errore registrando gruppo /logs: {e}')
