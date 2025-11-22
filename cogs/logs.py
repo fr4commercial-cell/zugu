@@ -62,9 +62,20 @@ class LogCog(commands.Cog):
     async def cog_load(self):
         # Registra il gruppo quando il cog viene caricato
         try:
-            self.bot.tree.add_command(self.logs_group)
+            existing = self.bot.tree.get_command('logs')
+            if existing is None:
+                self.bot.tree.add_command(self.logs_group)
         except Exception as e:
             logger.error(f'Errore aggiungendo logs_group: {e}')
+
+    async def cog_unload(self):
+        # Rimuove il gruppo se questo cog viene scaricato
+        try:
+            existing = self.bot.tree.get_command('logs')
+            if existing is not None:
+                self.bot.tree.remove_command('logs')
+        except Exception:
+            pass
 
     @logs_group.command(name='set', description='Imposta il canale per un tipo di log')
     @app_commands.describe(tipo='Tipo log (server/join/leave/message/warns/kicks/bans)', channel='Canale da associare')
