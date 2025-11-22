@@ -303,4 +303,10 @@ class TTSCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(TTSCog(bot))
+    cog = TTSCog(bot)
+    await bot.add_cog(cog)
+    try:
+        if bot.tree.get_command('tts') is None:
+            bot.tree.add_command(cog.tts)
+    except Exception as e:
+        logger.error(f'Errore registrando gruppo tts: {e}')
