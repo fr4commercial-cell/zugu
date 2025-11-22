@@ -367,5 +367,11 @@ class LevelsCog(commands.Cog):
 
 
 async def setup(bot: commands.Bot):
-    await bot.add_cog(LevelsCog(bot))
+    cog = LevelsCog(bot)
+    await bot.add_cog(cog)
+    try:
+        if bot.tree.get_command('level') is None:
+            bot.tree.add_command(cog.level)
+    except Exception as e:
+        print(f'Errore registrando gruppo level: {e}')
 # python -m pip install -U discord.py requests python-dotenv PyNaCl
