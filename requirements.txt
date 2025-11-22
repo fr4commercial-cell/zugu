@@ -1,10 +1,6 @@
-discord.py>=2.0.0
-nextcord
-colorama
-ffmpeg-python
-requests
-loguru
-PyNaCl
-aiosqlite
-Pillow
-python-dotenv
+# Requirements for the Discord bot
+discord.py>=2.4.0
+colorama>=0.4.6
+requests>=2.31.0
+PyNaCl>=1.5.0
+python-dotenv>=1.0.0
